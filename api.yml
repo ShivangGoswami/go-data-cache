@@ -1,0 +1,107 @@
+swagger: '2.0'
+info:
+    version: "1.0"
+    title: Go Data Cache
+    description: Time based Cache implementation in Go
+    contact:
+        name: Shivang Goswami
+        email: shivang.goswami@outlook.com
+schemes:
+    - http
+consumes:
+    - application/json
+produces:
+    - application/json
+tags:
+    - name: DataCacheOperations
+      description: Operations related to Cache manipulation
+
+definitions:
+    error:
+        x-visibility: public
+        type: object
+        required:
+          - message
+        properties:
+          code:
+            type: integer
+            format: int64
+            description: http error code
+            x-example: 401
+          message:
+            type: string
+            description: http error message
+            x-example: forbidden
+    cacheCollection:
+        type: array
+        items:
+            $ref: '#/definitions/cache'
+    cache:
+        x-visibility: public
+        type: object 
+        required:
+            - key
+            - value
+            - expiration
+        properties:
+            key:
+                type: string
+                description: key value
+                x-example: hello
+                minLength: 1
+                maxLength: 20
+            value:
+                description: data value
+                x-example: gopher data cache
+            expiration:
+                type: string
+                description: expiration duration
+                x-example: 5m
+
+basePath: /v1/cache
+paths:
+    /fetch:
+        get:
+          x-visibility: public
+          tags: [DataCacheOperations]
+          summary: Get Data 
+          description: |
+              Get Data Stored in Cache
+          parameters:
+              - name: key
+                in: query
+                required: false
+                type: string
+              - name: index
+                in: query
+                required: false
+                type: integer
+          responses:
+              200:
+                  description: key value data
+                  schema:
+                      $ref: '#/definitions/cacheCollection'
+              default:
+                  description: Generic error response
+                  schema:
+                      $ref: '#/definitions/error'
+    /store:
+        post:
+            x-visibility: public
+            tags: [DataCacheOperations]
+            summary: Store Data 
+            description: |
+                Store Data in Cache
+            parameters:
+              - name: params
+                in: body
+                required: true
+                schema:
+                    $ref: '#/definitions/cache'
+            responses:
+                201:
+                    description: Cache Data stored Successfully
+                default:
+                    description: Generic error response
+                    schema:
+                        $ref: '#/definitions/error'
