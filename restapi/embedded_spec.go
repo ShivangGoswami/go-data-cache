@@ -53,6 +53,7 @@ func init() {
             "in": "query"
           },
           {
+            "minimum": 1,
             "type": "integer",
             "name": "index",
             "in": "query"
@@ -205,6 +206,7 @@ func init() {
             "in": "query"
           },
           {
+            "minimum": 1,
             "type": "integer",
             "name": "index",
             "in": "query"

@@ -43,8 +43,24 @@ func configureAPI(api *ops.DatacacheAPI) http.Handler {
 	svc := pkgapi.NewService()
 
 	api.DataCacheOperationsGetFetchHandler = data_cache_operations.GetFetchHandlerFunc(func(params data_cache_operations.GetFetchParams) middleware.Responder {
-		log.Printf("Store Request Metadata:%#v\n", params.HTTPRequest)
-		return data_cache_operations.NewGetFetchOK()
+		log.Printf("Fetch Request Metadata:%#v\n", params.HTTPRequest)
+		if params.Key != nil {
+			log.Println("Fetch Request Received--->", "key:", *params.Key)
+		}
+		if params.Index != nil {
+			log.Println("Fetch Request Received--->", "value:", *params.Index)
+		}
+		response, err := svc.FetchData(params)
+		if err != nil {
+			if err == customerror.InvalidInput {
+				return data_cache_operations.NewGetFetchDefault(400).WithPayload(&models.Error{400, &[]string{err.Error()}[0]})
+			} else if err == customerror.MongoNotFound {
+				return data_cache_operations.NewGetFetchDefault(404).WithPayload(&models.Error{404, &[]string{"key not found"}[0]})
+			} else {
+				return data_cache_operations.NewPostStoreDefault(500).WithPayload(&models.Error{500, &[]string{err.Error()}[0]})
+			}
+		}
+		return data_cache_operations.NewGetFetchOK().WithPayload(response)
 	})
 
 	api.DataCacheOperationsPostStoreHandler = data_cache_operations.PostStoreHandlerFunc(func(params data_cache_operations.PostStoreParams) middleware.Responder {
@@ -56,6 +72,8 @@ func configureAPI(api *ops.DatacacheAPI) http.Handler {
 				return data_cache_operations.NewPostStoreDefault(500).WithPayload(&models.Error{500, &[]string{"Error while writing value to database"}[0]})
 			} else if err == customerror.TimeParseError {
 				return data_cache_operations.NewPostStoreDefault(422).WithPayload(&models.Error{422, &[]string{"Error while Parsing expiry duration"}[0]})
+			} else {
+				return data_cache_operations.NewPostStoreDefault(500).WithPayload(&models.Error{500, &[]string{err.Error()}[0]})
 			}
 		}
 		return data_cache_operations.NewPostStoreCreated()

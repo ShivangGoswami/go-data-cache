@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"datacache/models"
 	"datacache/restapi/ops/data_cache_operations"
 	"log"
 	"os"
@@ -17,6 +18,8 @@ type MongoDatastore struct {
 type Datastore interface {
 	Disconnect()
 	StoreCacheObj(params data_cache_operations.PostStoreParams) error
+	Fetchkey(params data_cache_operations.GetFetchParams) (*models.Cache, error)
+	FetchIndex(params data_cache_operations.GetFetchParams) (models.CacheCollection, error)
 }
 
 var conn struct {

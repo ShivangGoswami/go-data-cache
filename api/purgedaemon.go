@@ -25,7 +25,7 @@ func init() {
 func (svc *Service) gatekeeper() {
 	for {
 		time.Sleep(sleeptime)
-		log.Println("System: Purge Daemon process Started")
+		//log.Println("System: Purge Daemon process Started")
 		var elapsedKey []interface{}
 		svc.Memory.Range(func(key, value interface{}) bool {
 			if temptime, ok := svc.Timestamp.Load(key); ok {
@@ -46,6 +46,6 @@ func (svc *Service) gatekeeper() {
 			svc.Memory.Delete(val)
 			svc.Timestamp.Delete(val)
 		}
-		log.Println("System: Purge Daemon process Completed")
+		//log.Println("System: Purge Daemon process Completed")
 	}
 }

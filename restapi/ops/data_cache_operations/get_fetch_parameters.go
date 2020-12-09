@@ -12,6 +12,7 @@ import (
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/go-openapi/swag"
+	"github.com/go-openapi/validate"
 
 	strfmt "github.com/go-openapi/strfmt"
 )
@@ -33,6 +34,7 @@ type GetFetchParams struct {
 	HTTPRequest *http.Request `json:"-"`
 
 	/*
+	  Minimum: 1
 	  In: query
 	*/
 	Index *int64
@@ -87,6 +89,20 @@ func (o *GetFetchParams) bindIndex(rawData []string, hasKey bool, formats strfmt
 		return errors.InvalidType("index", "query", "int64", raw)
 	}
 	o.Index = &value
+
+	if err := o.validateIndex(formats); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// validateIndex carries on validations for parameter Index
+func (o *GetFetchParams) validateIndex(formats strfmt.Registry) error {
+
+	if err := validate.MinimumInt("index", "query", int64(*o.Index), 1, false); err != nil {
+		return err
+	}
 
 	return nil
 }

@@ -9,7 +9,7 @@ import (
 )
 
 func (svc *Service) StoreData(params data_cache_operations.PostStoreParams) error {
-	log.Println("Request Received in API Layer/key:", *params.Params.Key)
+	log.Println("Store Request Received in API Layer/key:", *params.Params.Key)
 	err := checkDataValues(params.Params)
 	if err != nil {
 		log.Println("Parsing Error:", err)
@@ -22,7 +22,7 @@ func (svc *Service) StoreData(params data_cache_operations.PostStoreParams) erro
 		log.Println("Mongo Error:", err)
 		return customerror.MongoStoreException
 	}
-	log.Println("Request Completed in API Layer/key:", *params.Params.Key)
+	log.Println("Store Request Completed in API Layer/key:", *params.Params.Key)
 	return nil
 }
 

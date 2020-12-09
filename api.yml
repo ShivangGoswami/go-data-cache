@@ -76,6 +76,7 @@ paths:
                 in: query
                 required: false
                 type: integer
+                minimum: 1
           responses:
               200:
                   description: key value data

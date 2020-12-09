@@ -16,7 +16,12 @@ func NewService() *Service {
 	log.Println("System Started Creating Service Object")
 	var svc Service
 	svc.Store = db.Connect()
+	//purge daemon
 	go svc.gatekeeper()
+	//restore daemon
+	go svc.restoreCache()
+	//kafka daemon
+	go svc.notifyKafka()
 	log.Println("System Completed Creating Service Object")
 	return &svc
 }
